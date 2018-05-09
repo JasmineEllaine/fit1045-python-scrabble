@@ -105,7 +105,8 @@ for line in tilesFile:
 tilesFile.close()
 
 # decide whether to return random tiles
-rand = input("Do you want to use random tiles (enter Y or N): ")
+# rand = input("Do you want to use random tiles (enter Y or N): ")
+rand = "N"
 if rand == "Y":
     SHUFFLE = True
 else:
@@ -115,17 +116,18 @@ else:
 if SHUFFLE:
     random.shuffle(Tiles)
 
-validBoardSize = False
-while not validBoardSize:
-    BOARD_SIZE = input("Enter board size (a number between 5 to 15): ")
-    if BOARD_SIZE.isdigit():
-        BOARD_SIZE = int(BOARD_SIZE)
-        if BOARD_SIZE >= 5 and BOARD_SIZE <= 15:
-            validBoardSize = True
-        else:
-            print("Your number is not within the range.\n")
-    else:
-        print("Are you a little tipsy? I asked you to enter a number.\n")
+# validBoardSize = False
+# while not validBoardSize:
+#     BOARD_SIZE = input("Enter board size (a number between 5 to 15): ")
+#     if BOARD_SIZE.isdigit():
+#         BOARD_SIZE = int(BOARD_SIZE)
+#         if BOARD_SIZE >= 5 and BOARD_SIZE <= 15:
+#             validBoardSize = True
+#         else:
+#             print("Your number is not within the range.\n")
+#     else:
+#         print("Are you a little tipsy? I asked you to enter a number.\n")
+BOARD_SIZE = 7
 
 Board = initializeBoard(BOARD_SIZE)
 printBoard(Board)
@@ -295,6 +297,9 @@ def betterCorrectTiles(r,c,d, word, tiles):
         return True
     return False
     
+def validMove():
+
+
 def placeWordOnRow(word, columnIndex, row):
     """ Places word on a list starting at index columnIndex
 
@@ -426,3 +431,32 @@ while not endGame:
     printTiles(myTiles)
 
     turnNo += 1
+
+
+"""
+4. The move must not change or relocate any
+    existing tile on the board.
+
+make dictionary
+
+while game is not finished
+    ask for word (MAKE UPPERCASE)
+    check if valid word
+
+    ask for location
+    check if valid location
+
+    check if valid move
+
+    print score
+
+    find best possible move
+    print best possible word, score, location
+
+    update board
+    print board
+
+    update tiles
+    print tiles/scores
+
+"""
