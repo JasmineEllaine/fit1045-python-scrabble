@@ -263,7 +263,7 @@ def correctTiles(word, tiles):
 def transpose(board):
     return list(map(list, list(zip(*board))))
 
-def betterCorrectTiles(r,c,d, word, tiles):
+def validMove(r,c,d, word, tiles):
     """Checks if a word can be made using the a set of tile
 
     Args:   
@@ -283,6 +283,12 @@ def betterCorrectTiles(r,c,d, word, tiles):
         boardSlice = board[c][r:r+len(word)]
     
     word = list(word)
+    # checks if moves/changes a tile on board
+    for i, v in enumerate(boardSlice):
+        if v != "":
+            if v != word[i]:
+                return False
+    
     # checks if boardtiles can be used to make word
     usedTiles = [tile for tile in word if tile not in boardSlice]
 
@@ -296,9 +302,6 @@ def betterCorrectTiles(r,c,d, word, tiles):
     if usedTiles == []:
         return True
     return False
-    
-def validMove():
-
 
 def placeWordOnRow(word, columnIndex, row):
     """ Places word on a list starting at index columnIndex
@@ -408,7 +411,7 @@ while not endGame:
     else:
         # checks if myTiles can make userWord
         # asks for another if not
-        if not betterCorrectTiles(r, c, d, userWord, myTiles):
+        if not validMove(r, c, d, userWord, myTiles):
             print("Word can't be made with given tiles.")
             continue
 
