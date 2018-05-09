@@ -19,7 +19,6 @@ def getTiles(myTiles):
         myTiles.append(Tiles[TILES_USED])
         TILES_USED += 1
 
-
 # prints tiles and their scores
 def printTiles(myTiles):
     tiles = ""
@@ -35,7 +34,6 @@ def printTiles(myTiles):
     print("\nTiles : " + tiles)
     print("Scores: " + scores)
 
-
 # gets the score of a letter
 def getScore(letter):
     for item in Scores:
@@ -43,8 +41,6 @@ def getScore(letter):
             return item[1]
 
 # initialize n x n Board with empty strings
-
-
 def initializeBoard(n):
     Board = []
     for i in range(n):
@@ -57,8 +53,6 @@ def initializeBoard(n):
 
 # put character t before and after the string s such that the total length
 # of the string s is CELL_WIDTH.
-
-
 def getString(s, t):
     global CELL_WIDTH
     s = str(s)
@@ -70,8 +64,6 @@ def getString(s, t):
     return s
 
 # print the Board on screen
-
-
 def printBoard(Board):
     global CELL_WIDTH
     print("\nBoard:")
@@ -92,7 +84,6 @@ def printBoard(Board):
         print(line1)
 
     print()
-
 
 scoresFile = open('scores.txt')
 tilesFile = open('tiles.txt')
@@ -123,7 +114,6 @@ else:
         SHUFFLE = True
 if SHUFFLE:
     random.shuffle(Tiles)
-
 
 validBoardSize = False
 while not validBoardSize:
@@ -165,7 +155,6 @@ def makeDictionary(dictionaryName):
     dictionaryFile = open(dictionaryName)
     return [dictionaryWord.strip() for dictionaryWord in dictionaryFile]
 
-
 def inDictionary(word, dictionary):
     """ Checks if a word is in a given dictionary
 
@@ -183,7 +172,6 @@ def inDictionary(word, dictionary):
 
     except Exception:
         return False
-
 
 def validLocationFormat(location):
     """ Checks if the format of the location is valid
@@ -215,7 +203,6 @@ def validLocationFormat(location):
 
     return False
 
-
 def validFirstLocation(location, boardsize):
     """ Checks if location is valid for the first turn
 
@@ -235,7 +222,6 @@ def validFirstLocation(location, boardsize):
             return True
 
     return False
-
 
 def validLocation(r, c, d, boardsize, word):
     """ Checks if location is valid 
@@ -258,7 +244,6 @@ def validLocation(r, c, d, boardsize, word):
                 return True
     except Exception:
         return False
-
 
 def correctTiles(word, tiles):
     """Checks if a word can be made using the a set of tile
@@ -286,10 +271,9 @@ def betterCorrectTiles(r,c,d, word, tiles):
     """
     if d == 'H':
         boardSlice = Board[r][c:c+len(word)]
-    if d == 'V':
+    # if d == 'V':
     # set(word).issubset(set(myTiles))
     
-
 def placeWordOnRow(word, columnIndex, row):
     """ Places word on a list starting at index columnIndex
 
@@ -302,12 +286,10 @@ def placeWordOnRow(word, columnIndex, row):
         row (list): list where each item is a letter
             ["", "", "C", "A", "T", "", ""]
     """
-
     for letterIndex in range(len(word)):
         row[letterIndex + columnIndex] = userWord[letterIndex]
 
     return row
-
 
 def placeWordOnBoard(r, c, d, word, board):
     # place normally if H
@@ -321,7 +303,6 @@ def placeWordOnBoard(r, c, d, word, board):
         board = list(map(list, list(zip(*board))))
     return board
 
-
 def getWordScore(word):
     """Calculates the total score of a given word
 
@@ -332,7 +313,6 @@ def getWordScore(word):
         (int): total score of the word
     """
     return reduce((lambda x, y: x + y), [getScore(letter) for letter in userWord])
-
 
 # scrabble code
 englishDict = makeDictionary("dictionary.txt")
@@ -397,18 +377,20 @@ while not endGame:
             continue
         # places word on board
         Board = placeWordOnBoard(r, c, d, userWord, Board)
+
     else:
         # checks if myTiles can make userWord
         # asks for another if not
-        if not betterCorrectTiles(userWord, myTiles):
+        if not betterCorrectTiles(r, c, d, userWord, myTiles):
             print("Word can't be made with given tiles.")
             continue
 
         # checks if word can fit the board
         # asks for another if not
-        if not validLocation(r,c,d, BOARD_SIZE, word)
+        if not validLocation(r,c,d, BOARD_SIZE, userWord):
             print("Word outside board dimensions.")
             continue
+        
         # places word on board
         Board = placeWordOnBoard(r, c, d, userWord, Board)
 
