@@ -166,6 +166,7 @@ def validLocationFormat(location):
     if len(location) == 3:
         # checks if d is either H or V
         d = ["H", "V"]
+        
         if location[2] in d:
             # checks if r and c are integers
             try:
@@ -247,6 +248,7 @@ def validMove(r, c, d, word, tiles):
         boardSlice = board[c][r:r + len(word)]
         
     word = list(word)
+
     # checks if moves/changes a tile on board
     for i, v in enumerate(boardSlice):
         if v != "":
@@ -254,12 +256,15 @@ def validMove(r, c, d, word, tiles):
                 return False
     # checks if boardtiles can be used to make word
     usedTiles = [tile for tile in word if tile not in boardSlice]
+
     # checks if uses at least one tile from board
     if len(usedTiles) == len(word):
         return False
+
     # eat some letterDonuts
     for tile in usedTiles:
         myTiles.remove(tile)
+
     # checks if myTiles can be used to make remaining words
     usedTiles = [tile for tile in usedTiles if tile not in myTiles]
     if usedTiles == []:
@@ -299,48 +304,44 @@ def getWordScore(word):
         (int): total score of the word
     """
     return reduce((lambda x, y: x + y), [getScore(letter) for letter in userWord])
-# def updateTiles(r, c, d, word):
-#     if d == 'H':
-#         boardSlice = Board[r][c:c+len(word)]
-#     # if d == V
-#     else:
-#         board = transpose(Board)
-#         boardSlice = board[c][r:r+len(word)]
-#     word = list(word)
-#     # find tiles to be used
-#     usedTiles = [tile for tile in word if tile not in boardSlice]
-#     # find remaining tiles
-#     for tile in usedTiles:
-#         myTiles.remove(tile)
 
 # scrabble code
 englishDict = makeDictionary("dictionary.txt")
+
 # game data
 turnNo = 1
 totalScore = 0
+
 # keeps asking for move while game isnt finished
 endGame = False
 while not endGame:
     # ask for word
     userWord = input("\nEnter a word: ")
+
     # makes word uppercase if valid
     # asks for another if invalid
     if not inDictionary(userWord, englishDict):
         print("Invalid word.")
         continue
+
     userWord = userWord.upper()
+
     # ask for location
     location = input("Enter a location: ")
+
     # formats location if valid
     # asks for another if invalid
     if not validLocationFormat(location):
         print("Invalid location.")
         continue
+
     location = location.split(":")
     location = list(map(int, location[:2])) + [location[2]]
+
     r = location[0]
     c = location[1]
     d = location[2]
+
     # copies necessary data for finding best move later
     boardCopy = copy.deepcopy(Board)
     myTilesCopy = copy.deepcopy(myTiles)
@@ -351,19 +352,23 @@ while not endGame:
         if not validFirstLocation(location, BOARD_SIZE):
             print("Invalid first move location.")
             continue
+
         # checks if myTiles can make userWord
         # asks for another if not
         if not correctTiles(userWord, myTiles):
             print("Word can't be made with given tiles.")
             continue
+
         # checks if word can fit the board
         # asks for another if not
         if len(userWord) > BOARD_SIZE // 2 + 1:
             print("Word outside board dimensions.")
             continue
+
         # places word on board
         Board = placeWordOnBoard(r, c, d, userWord, Board)
         removeLetters()
+
     # all other turns
     else:
         # checks if word can fit the board
@@ -371,17 +376,22 @@ while not endGame:
         if not validLocation(r, c, d, BOARD_SIZE, userWord):
             print("Word outside board dimensions.")
             continue
+
         # checks if move is valid
         if not validMove(r, c, d, userWord, myTiles):
             print("Invalid move.")
             continue
+
         # places word on board
         Board = placeWordOnBoard(r, c, d, userWord, Board)
+
     wordScore = getWordScore(userWord)
     totalScore += wordScore
+
     print("Your score in this move:", wordScore)
     print("Your total score:", totalScore)
     printBoard(Board)
+
     #updateTiles(r, c, d, userWord)
     getTiles(myTiles)
     printTiles(myTiles)
