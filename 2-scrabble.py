@@ -269,7 +269,7 @@ def betterCorrectTiles(r,c,d, word, tiles):
         tiles (list): list containing tiles in uppercase
 
     Returns:
-        True (bool): if word can be made using the given tiles
+        True (bool): if word can be made using the given tilzes
         False (bool): otherwise
     """
     if d == 'H':
