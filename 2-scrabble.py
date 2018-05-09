@@ -207,10 +207,10 @@ def validLocation(r, c, d, boardsize, word):
     """
     try:
         if d == 'H':
-            if (c + len(word)) < boardsize:
+            if (c + len(word)) <= boardsize:
                 return True
         if d == 'V':
-            if (r + len(word)) < boardsize:
+            if (r + len(word)) <= boardsize:
                 return True
     except Exception:
         return False
@@ -261,12 +261,17 @@ def validMove(r, c, d, word, tiles):
     if len(usedTiles) == len(word):
         return False
 
-    # eat some letterDonuts
+    #make deep copy of myTiles so we can use the original list later
+    tmp_tiles = copy.deepcopy(myTiles)
+
+    #Remove tiles from tile rack
     for tile in usedTiles:
         myTiles.remove(tile)
-
+        
     # checks if myTiles can be used to make remaining words
-    usedTiles = [tile for tile in usedTiles if tile not in myTiles]
+    usedTiles = [tile for tile in usedTiles if tile not in tmp_tiles]
+
+    
     if usedTiles == []:
         return True
     return False
