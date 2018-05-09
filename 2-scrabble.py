@@ -258,6 +258,9 @@ def correctTiles(word, tiles):
     """    
     return set(word).issubset(set(myTiles))
 
+def transpose(board):
+    return list(map(list, list(zip(*board))))
+
 def betterCorrectTiles(r,c,d, word, tiles):
     """Checks if a word can be made using the a set of tile
 
@@ -270,9 +273,31 @@ def betterCorrectTiles(r,c,d, word, tiles):
         False (bool): otherwise
     """
     if d == 'H':
-        boardSlice = Board[r][c:c+len(word)]
+        boardSlice = Board[r][c:c+len(word)].remove("")
+
+    # if d == V
+    else:
+        board = transpose(Board)
+        boardSlice = board[c][r:r+len(word)].remove("")
+    
+    word = list(word)
+    # checks if boardtiles can be used to make word
+    usedTiles = [tile for tile in word if tile not in boardSlice]
+
+    # checks if myTiles can be used to make remaining words
+    usedTiles += [tile for tile in word if tile not in myTiles]
+        
+    if usedTiles == []:
+        return True
+    return False
+
     # if d == 'V':
     # set(word).issubset(set(myTiles))
+
+# take slice
+# remove board letters from word 
+# remove tile letters from word
+# if word is empty, correct tiles
     
 def placeWordOnRow(word, columnIndex, row):
     """ Places word on a list starting at index columnIndex
@@ -378,6 +403,7 @@ while not endGame:
         # places word on board
         Board = placeWordOnBoard(r, c, d, userWord, Board)
 
+    # all other turns
     else:
         # checks if myTiles can make userWord
         # asks for another if not
@@ -393,8 +419,6 @@ while not endGame:
         
         # places word on board
         Board = placeWordOnBoard(r, c, d, userWord, Board)
-
-    # all other turns
 
     wordScore = getWordScore(userWord)
     totalScore += wordScore
