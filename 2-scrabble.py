@@ -124,6 +124,10 @@ printTiles(myTiles)
 ########################################################################
 # Write your code below this
 ########################################################################
+# game data
+turnNo = 1
+totalScore = 0
+
 # functions here
 
 def makeDictionary(dictionaryName):
@@ -255,13 +259,13 @@ def validMove(r, c, d, word, tiles):
     for i, v in enumerate(boardSlice):
         if v != "":
             if v != word[i]:
-                return False
+                return False, None
     # checks if boardtiles can be used to make word
     usedTiles = [tile for tile in word if tile not in boardSlice]
 
     # checks if uses at least one tile from board
     if len(usedTiles) == len(word):
-        return False
+        return False, None
 
     #make deep copy of myTiles so we can use the original list later
     tmp_tiles = copy.deepcopy(myTiles)
@@ -269,14 +273,14 @@ def validMove(r, c, d, word, tiles):
     #Remove tiles from tile rack
     for tile in usedTiles:
         myTiles.remove(tile)
-        
+    
     # checks if myTiles can be used to make remaining words
-    usedTiles = [tile for tile in usedTiles if tile not in tmp_tiles]
+    shitTiles = [tile for tile in usedTiles if tile not in tmp_tiles]
 
     
-    if usedTiles == []:
-        return True
-    return False
+    if shitTiles == []:
+        return True, usedTiles
+    return False, None
 
 def placeWordOnRow(word, columnIndex, row):
     """ Places word on a list starting at index columnIndex
@@ -310,14 +314,12 @@ def getWordScore(word):
     Returns:
         (int): total score of the word
     """
-    return reduce((lambda x, y: x + y), [getScore(letter) for letter in userWord])
+    return reduce((lambda x, y: x + y), [getScore(letter) for letter in word])
 
 # scrabble code
 englishDict = makeDictionary("dictionary.txt")
 
-# game data
-turnNo = 1
-totalScore = 0
+
 
 # keeps asking for move while game isnt finished
 endGame = False
@@ -388,9 +390,12 @@ while not endGame:
             continue
 
         # checks if move is valid
-        if not validMove(r, c, d, userWord, myTiles):
+        valid, tiles = validMove(r, c, d, userWord, myTiles)
+        if not valid:
             print("Invalid move.")
             continue
+        else:
+            wordScore = getWordScore(tiles)
 
         # places word on board
         Board = placeWordOnBoard(r, c, d, userWord, Board)
