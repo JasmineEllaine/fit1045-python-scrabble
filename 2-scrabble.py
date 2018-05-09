@@ -6,11 +6,13 @@ import random
 import copy
 
 
-TILES_USED = 0 # records how many tiles have been returned to user
-CELL_WIDTH = 3 # cell width of the scrabble board
-SHUFFLE = False # records whether to shuffle the tiles or not
+TILES_USED = 0  # records how many tiles have been returned to user
+CELL_WIDTH = 3  # cell width of the scrabble board
+SHUFFLE = False  # records whether to shuffle the tiles or not
 
 # inserts tiles into myTiles
+
+
 def getTiles(myTiles):
     global TILES_USED
     while len(myTiles) < 7 and TILES_USED < len(Tiles):
@@ -41,6 +43,8 @@ def getScore(letter):
             return item[1]
 
 # initialize n x n Board with empty strings
+
+
 def initializeBoard(n):
     Board = []
     for i in range(n):
@@ -53,36 +57,42 @@ def initializeBoard(n):
 
 # put character t before and after the string s such that the total length
 # of the string s is CELL_WIDTH.
-def getString(s,t):
+
+
+def getString(s, t):
     global CELL_WIDTH
     s = str(s)
     rem = CELL_WIDTH - len(s)
-    rem = rem//2
-    s = t*rem + s
+    rem = rem // 2
+    s = t * rem + s
     rem = CELL_WIDTH - len(s)
-    s = s + t*rem
+    s = s + t * rem
     return s
 
 # print the Board on screen
+
+
 def printBoard(Board):
     global CELL_WIDTH
     print("\nBoard:")
-    spaces = CELL_WIDTH*" "
-    board_str =  "  |" + "|".join(getString(item," ") for item in range(len(Board)))  +"|"
-    line1 = "--|" + "|".join(getString("","-") for item in range(len(Board)))  +"|"
+    spaces = CELL_WIDTH * " "
+    board_str = "  |" + "|".join(getString(item, " ")
+                                 for item in range(len(Board))) + "|"
+    line1 = "--|" + "|".join(getString("", "-")
+                             for item in range(len(Board))) + "|"
 
- 
     print(board_str)
     print(line1)
-    
+
     for i in range(len(Board)):
-        row = str(i) + " "*(2-len(str(i))) +"|"
+        row = str(i) + " " * (2 - len(str(i))) + "|"
         for j in range(len(Board)):
-            row += getString(Board[i][j]," ") + "|"
+            row += getString(Board[i][j], " ") + "|"
         print(row)
         print(line1)
-        
+
     print()
+
 
 scoresFile = open('scores.txt')
 tilesFile = open('tiles.txt')
@@ -93,13 +103,13 @@ for line in scoresFile:
     line = line.split()
     letter = line[0]
     score = int(line[1])
-    Scores.append([letter,score])
+    Scores.append([letter, score])
 scoresFile.close()
 
 # read tiles from tiles.txt and insert in the list Tiles
 Tiles = []
 for line in tilesFile:
-    line= line.strip()
+    line = line.strip()
     Tiles.append(line)
 tilesFile.close()
 
@@ -139,25 +149,30 @@ printTiles(myTiles)
 ########################################################################
 
 # functions here
+
+
 def makeDictionary(dictionaryName):
     """ Creates a list out of a file with each line being an item in 
        the list.
+
     Args:   
         dictionaryName (str): name of the file to be turned into a list
                               must contain file extension
-        
+
     Returns:
         (list): list containing all each line of a file
     """
     dictionaryFile = open(dictionaryName)
     return [dictionaryWord.strip() for dictionaryWord in dictionaryFile]
 
+
 def inDictionary(word, dictionary):
     """ Checks if a word is in a given dictionary
+
     Args:   
         word (str): any string of characters
         dictionary (list): list of dictionary words
-        
+
     Returns:
         True (bool): if userWord can be found in dictionary
         False (bool): otherwise
@@ -169,11 +184,13 @@ def inDictionary(word, dictionary):
     except Exception:
         return False
 
+
 def validLocationFormat(location):
     """ Checks if the format of the location is valid
+
     Args:   
         location (str): location to be checked
-        
+
     Returns:
         True (bool): if format is valid
         False (bool): if format is invalid
@@ -188,21 +205,24 @@ def validLocationFormat(location):
 
             # checks if r and c are integers
             try:
-                rc = [number for number in location[:2] if int(number) >= 0 and int(number) < BOARD_SIZE]
+                rc = [number for number in location[:2] if int(
+                    number) >= 0 and int(number) < BOARD_SIZE]
             except Exception:
                 return False
             else:
                 if len(rc) == 2:
                     return True
-                
+
     return False
+
 
 def validFirstLocation(location, boardsize):
     """ Checks if location is valid for the first turn
+
     Args:   
         location (list): valid location
         boardsize (int): size of the board
-        
+
     Returns:
         True (bool): if move is valid for the first turn
         False (bool): if move is invalid for the first turn
@@ -216,50 +236,98 @@ def validFirstLocation(location, boardsize):
 
     return False
 
+
+def validLocation(r, c, d, boardsize, word):
+    """ Checks if location is valid 
+
+    Args:   
+        location (list): valid location
+        boardsize (int): size of the board
+        word (str): user picked word
+
+    Returns:
+        True (bool): if move is valid 
+        False (bool): if move is invalid 
+    """
+    try:
+        if d == 'H':
+            if (c + len(word)) < boardsize:
+                return True
+        if d == 'V':
+            if (r + len(word)) < boardsize:
+                return True
+    except Exception:
+        return False
+
+
 def correctTiles(word, tiles):
     """Checks if a word can be made using the a set of tile
+
     Args:   
         word (str): word all uppercase
         tiles (list): list containing tiles in uppercase
-        
+
+    Returns:
+        True (bool): if word can be made using the given tiles
+        False (bool): otherwise
+    """    
+    return set(word).issubset(set(myTiles))
+
+def betterCorrectTiles(r,c,d, word, tiles):
+    """Checks if a word can be made using the a set of tile
+
+    Args:   
+        word (str): word all uppercase
+        tiles (list): list containing tiles in uppercase
+
     Returns:
         True (bool): if word can be made using the given tiles
         False (bool): otherwise
     """
-    return set(word).issubset(set(myTiles))
+    if d == 'H':
+        boardSlice = Board[r][c:c+len(word)]
+    if d == 'V':
+    # set(word).issubset(set(myTiles))
+    
 
-def placeFirstWordOnRow(word, columnIndex, row):
+def placeWordOnRow(word, columnIndex, row):
     """ Places word on a list starting at index columnIndex
+
     Args:   
         word (str): uppercase word
         columnIndex (int): index where first letter of word is to be put
         row (list): row where word will be put
-        
+
     Returns: 
         row (list): list where each item is a letter
             ["", "", "C", "A", "T", "", ""]
     """
+
     for letterIndex in range(len(word)):
         row[letterIndex + columnIndex] = userWord[letterIndex]
 
     return row
 
-def placeFirstWordOnBoard(r, c, d, word, board):
+
+def placeWordOnBoard(r, c, d, word, board):
     # place normally if H
     if d == "H":
-        board[r] = placeFirstWordOnRow(word, c, board[r])
+        board[r] = placeWordOnRow(word, c, board[r])
 
     # transpose board first if V
     elif d == "V":
         board = list(map(list, list(zip(*board))))
-        board[c] = placeFirstWordOnRow(word, r, board[c])
+        board[c] = placeWordOnRow(word, r, board[c])
         board = list(map(list, list(zip(*board))))
+    return board
+
 
 def getWordScore(word):
     """Calculates the total score of a given word
+
     Args:   
         word (str): word to be ccalculated
-        
+
     Returns:
         (int): total score of the word
     """
@@ -287,7 +355,6 @@ while not endGame:
         continue
     userWord = userWord.upper()
 
-
     # ask for location
     location = input("Enter a location: ")
 
@@ -296,6 +363,7 @@ while not endGame:
     if not validLocationFormat(location):
         print("Invalid location.")
         continue
+
     location = location.split(":")
     location = list(map(int, location[:2])) + [location[2]]
 
@@ -303,6 +371,10 @@ while not endGame:
     c = location[1]
     d = location[2]
 
+    # copies necessary data for finding best move later
+
+    boardCopy = copy.deepcopy(Board)
+    myTilesCopy = copy.deepcopy(myTiles)
 
     # first turn conditions
     # checks if location is centered
@@ -317,19 +389,30 @@ while not endGame:
         if not correctTiles(userWord, myTiles):
             print("Word can't be made with given tiles.")
             continue
-        
+
         # checks if word can fit the board
         # asks for another if not
         if len(userWord) > BOARD_SIZE // 2 + 1:
             print("Word outside board dimensions.")
             continue
-
         # places word on board
-        placeFirstWordOnBoard(r, c, d, userWord, Board)
+        Board = placeWordOnBoard(r, c, d, userWord, Board)
+    else:
+        # checks if myTiles can make userWord
+        # asks for another if not
+        if not betterCorrectTiles(userWord, myTiles):
+            print("Word can't be made with given tiles.")
+            continue
 
+        # checks if word can fit the board
+        # asks for another if not
+        if not validLocation(r,c,d, BOARD_SIZE, word)
+            print("Word outside board dimensions.")
+            continue
+        # places word on board
+        Board = placeWordOnBoard(r, c, d, userWord, Board)
 
     # all other turns
-    
 
     wordScore = getWordScore(userWord)
     totalScore += wordScore
@@ -339,5 +422,5 @@ while not endGame:
     printBoard(Board)
     getTiles(myTiles)
     printTiles(myTiles)
-    
+
     turnNo += 1
