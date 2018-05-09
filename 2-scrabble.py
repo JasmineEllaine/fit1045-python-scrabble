@@ -343,6 +343,23 @@ def getWordScore(word):
     """
     return reduce((lambda x, y: x + y), [getScore(letter) for letter in userWord])
 
+def updateTiles(r, c, d, word):
+    if d == 'H':
+        boardSlice = Board[r][c:c+len(word)]
+
+    # if d == V
+    else:
+        board = transpose(Board)
+        boardSlice = board[c][r:r+len(word)]
+    
+    word = list(word)
+    # find tiles to be used
+    usedTiles = [tile for tile in word if tile not in boardSlice]
+
+    # find remaining tiles
+    for tile in usedTiles:
+        myTiles.remove(tile)
+
 # scrabble code
 englishDict = makeDictionary("dictionary.txt")
 
@@ -420,6 +437,10 @@ while not endGame:
         if not validLocation(r,c,d, BOARD_SIZE, userWord):
             print("Word outside board dimensions.")
             continue
+
+        # checks if move is valid
+        if not validMove(r, c, d, userWord, myTiles):
+            print("Invalid move.")
         
         # places word on board
         Board = placeWordOnBoard(r, c, d, userWord, Board)
@@ -430,6 +451,7 @@ while not endGame:
     print("Your total score:", totalScore)
 
     printBoard(Board)
+    updateTiles(r, c, d, userWord)
     getTiles(myTiles)
     printTiles(myTiles)
 
