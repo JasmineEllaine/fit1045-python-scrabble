@@ -183,7 +183,7 @@ def validLocationFormat(location):
                     return True
     return False
 
-def validFirstLocation(location, boardsize):
+def validFirstLocation(r,c, boardsize):
     """ Checks if location is valid for the first turn
     Args:   
         location (list): valid location
@@ -193,9 +193,9 @@ def validFirstLocation(location, boardsize):
         False (bool): if move is invalid for the first turn
     """
     # checks if r == c
-    if location[0] == location[1]:
+    if r == c:
         # checks if centered
-        if location[0] == boardsize // 2:
+        if r == (boardsize // 2):
             return True
     return False
 
@@ -358,7 +358,7 @@ while not endGame:
     # checks if location is centered
     # asks for another location if word not centered
     if turnNo == 1:
-        if not validFirstLocation(location, BOARD_SIZE):
+        if not validFirstLocation(r, c, BOARD_SIZE):
             half = BOARD_SIZE // 2
             print("The location in the first move must be {}:{}:H or {}:{}:V.".format(half, half, half, half))
             print("Invalid first move location.")
