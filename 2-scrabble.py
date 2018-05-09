@@ -115,7 +115,7 @@ if SHUFFLE:
 #             print("Your number is not within the range.\n")
 #     else:
 #         print("Are you a little tipsy? I asked you to enter a number.\n")
-BOARD_SIZE = 7
+BOARD_SIZE = 9
 Board = initializeBoard(BOARD_SIZE)
 printBoard(Board)
 myTiles = []
@@ -214,9 +214,11 @@ def validLocation(r, c, d, boardsize, word):
                 return True
     except Exception:
         return False
+
 def removeLetters():
     for tile in userWord:
         myTiles.remove(tile)
+
 def correctTiles(word, tiles):
     """Checks if a word can be made using the a set of tile
     Args:   
@@ -355,6 +357,8 @@ while not endGame:
     # asks for another location if word not centered
     if turnNo == 1:
         if not validFirstLocation(location, BOARD_SIZE):
+            half = BOARD_SIZE // 2
+            print("The location in the first move must be {}:{}:H or {}:{}:V.".format(half, half, half, half))
             print("Invalid first move location.")
             continue
 
@@ -373,6 +377,7 @@ while not endGame:
         # places word on board
         Board = placeWordOnBoard(r, c, d, userWord, Board)
         removeLetters()
+        wordScore = getWordScore(userWord)
 
     # all other turns
     else:
@@ -390,9 +395,7 @@ while not endGame:
         # places word on board
         Board = placeWordOnBoard(r, c, d, userWord, Board)
 
-    wordScore = getWordScore(userWord)
     totalScore += wordScore
-
     print("Your score in this move:", wordScore)
     print("Your total score:", totalScore)
     printBoard(Board)
