@@ -273,19 +273,19 @@ def betterCorrectTiles(r,c,d, word, tiles):
         False (bool): otherwise
     """
     if d == 'H':
-        boardSlice = Board[r][c:c+len(word)].remove("")
+        boardSlice = Board[r][c:c+len(word)]
 
     # if d == V
     else:
         board = transpose(Board)
-        boardSlice = board[c][r:r+len(word)].remove("")
+        boardSlice = board[c][r:r+len(word)]
     
     word = list(word)
     # checks if boardtiles can be used to make word
     usedTiles = [tile for tile in word if tile not in boardSlice]
 
     # checks if myTiles can be used to make remaining words
-    usedTiles += [tile for tile in word if tile not in myTiles]
+    usedTiles = [tile for tile in usedTiles if tile not in myTiles]
         
     if usedTiles == []:
         return True
