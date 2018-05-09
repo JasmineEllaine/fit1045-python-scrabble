@@ -284,20 +284,16 @@ def betterCorrectTiles(r,c,d, word, tiles):
     # checks if boardtiles can be used to make word
     usedTiles = [tile for tile in word if tile not in boardSlice]
 
+    # checks if uses at least one tile from board
+    if len(usedTiles) == len(word):
+        return False
+    
     # checks if myTiles can be used to make remaining words
     usedTiles = [tile for tile in usedTiles if tile not in myTiles]
         
     if usedTiles == []:
         return True
     return False
-
-    # if d == 'V':
-    # set(word).issubset(set(myTiles))
-
-# take slice
-# remove board letters from word 
-# remove tile letters from word
-# if word is empty, correct tiles
     
 def placeWordOnRow(word, columnIndex, row):
     """ Places word on a list starting at index columnIndex
