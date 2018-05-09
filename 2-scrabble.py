@@ -43,9 +43,9 @@ def getScore(letter):
 # initialize n x n Board with empty strings
 def initializeBoard(n):
     Board = []
-    for i in range(n):
+    for _ in range(n):
         row = []
-        for j in range(n):
+        for _ in range(n):
             row.append("")
         Board.append(row)
 
@@ -67,7 +67,7 @@ def getString(s, t):
 def printBoard(Board):
     global CELL_WIDTH
     print("\nBoard:")
-    spaces = CELL_WIDTH * " "
+    #spaces = CELL_WIDTH * " "
     board_str = "  |" + "|".join(getString(item, " ")
                                  for item in range(len(Board))) + "|"
     line1 = "--|" + "|".join(getString("", "-")
