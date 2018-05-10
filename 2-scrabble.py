@@ -121,17 +121,18 @@ printBoard(Board)
 myTiles = []
 getTiles(myTiles)
 printTiles(myTiles)
+
 ########################################################################
 # Write your code below this
 ########################################################################
+
 # game data
 turnNo = 1
 totalScore = 0
 
 # functions here
-
 def makeDictionary(dictionaryName):
-    """ Creates a list out of a file with each line being an item in 
+    """ Creates a list out of a filename with each line being an item in 
        the list.
     Args:   
         dictionaryName (str): name of the file to be turned into a list
@@ -168,10 +169,11 @@ def validLocationFormat(location):
     # checks if location is in r:c:d format
     location = location.split(":")
     if len(location) == 3:
+
         # checks if d is either H or V
         d = ["H", "V"]
-        
         if location[2] in d:
+
             # checks if r and c are integers
             try:
                 rc = [number for number in location[:2] if int(
@@ -185,8 +187,9 @@ def validLocationFormat(location):
 
 def validFirstLocation(r,c, boardsize):
     """ Checks if location is valid for the first turn
-    Args:   
-        location (list): valid location
+    Args:
+        r (int): row index   
+        c (int): column index
         boardsize (int): size of the board
     Returns:
         True (bool): if move is valid for the first turn
@@ -199,15 +202,16 @@ def validFirstLocation(r,c, boardsize):
             return True
     return False
 
-def validLocation(r, c, d, boardsize, word):
-    """ Checks if location is valid 
-    Args:   
-        location (list): valid location
+def wordFitsBoard(r, c, d, boardsize, word):
+    """ Checks if word fits inside board 
+    Args:
+        r (int): row index   
+        c (int): column index
         boardsize (int): size of the board
         word (str): user picked word
     Returns:
-        True (bool): if move is valid 
-        False (bool): if move is invalid 
+        True (bool): if word fits board
+        False (bool): if word does not fit board
     """
     try:
         if d == 'H':
@@ -219,34 +223,61 @@ def validLocation(r, c, d, boardsize, word):
     except Exception:
         return False
 
-def removeLetters():
-    for tile in userWord:
-        myTiles.remove(tile)
+def removeLetters(word, tilesList):
+    """ Removes first occurence of each letter of a word from a list
+    Args:
+        word (str): word all uppercase
+        tilesList (list): list containing letters in uppercase
+    Returns:
+        newTilesList (list): same list as tilesList but with word
+                             letters removed
+    """    
+    newTilesList = copy.deepcopy(tilesList)
+    for letter in word:
+        newTilesList.remove(letter)
+    return newTilesList
 
 def correctTiles(word, tiles):
-    """Checks if a word can be made using the a set of tile
+    """ Checks if word can be made given a set of tiles
     Args:   
         word (str): word all uppercase
         tiles (list): list containing tiles in uppercase
     Returns:
         True (bool): if word can be made using the given tiles
         False (bool): otherwise
-    """    
+    """
     return set(word).issubset(set(myTiles))
 
 def transpose(board):
+    """ Transposes a matrix
+    Args:   
+        board (list): a list of lists
+    Returns:
+        list (list): transposed board
+    """
     return list(map(list, list(zip(*board))))
 
 def validMove(r, c, d, word, tiles):
-    """Checks if a word can be made using the a set of tile
-    Args:   
+    """ Checks if move changes tile on board
+               if move uses at least one tile from board
+               if word letters not in board can be made using tiles from myTiles
+               removes tiles from tile rack if valid
+    Args:
+        r (int): row index   
+        c (int): column index
+        d (str): direction
         word (str): word all uppercase
         tiles (list): list containing tiles in uppercase
     Returns:
-        True (bool): if word can be made using the given tilzes
-        False (bool): otherwise
+        1
+        True (bool): if move is valid
+        False (bool): if move is invalid
+        2
+        None: if move is invalid/no points scoring tiles
+        scoringTiles (list): points scoring tiles
     """
-  
+    # creates a list out of the section of the board where word
+    # is to be placed
     if d == 'H':
         boardSlice = Board[r][c:c + len(word)]
     elif d == 'V':
@@ -254,53 +285,55 @@ def validMove(r, c, d, word, tiles):
         boardSlice = board[c][r:r + len(word)]
         
     word = list(word)
-
     # checks if moves/changes a tile on board
     for i, v in enumerate(boardSlice):
         if v != "":
             if v != word[i]:
                 return False, None
-    # checks if boardtiles can be used to make word
-    usedTiles = [tile for tile in word if tile not in boardSlice]
 
+    # makes list of word letters not in board
+    scoringTiles = [letter for letter in word if letter not in boardSlice]
     # checks if uses at least one tile from board
-    if len(usedTiles) == len(word):
+    if len(scoringTiles) == len(word):
         return False, None
 
-    #make deep copy of myTiles so we can use the original list later
-    tmp_tiles = copy.deepcopy(myTiles)
+    # checks if myTiles can be used to make remaining letters
+    remTiles = [tile for tile in scoringTiles if tile not in myTiles]
 
-    #Remove tiles from tile rack
-    for tile in usedTiles:
-        myTiles.remove(tile)
-    
-    # checks if myTiles can be used to make remaining words
-    shitTiles = [tile for tile in usedTiles if tile not in tmp_tiles]
-
-    
-    if shitTiles == []:
-        return True, usedTiles
+    if remTiles == []:
+        return True, scoringTiles
     return False, None
 
-def placeWordOnRow(word, columnIndex, row):
-    """ Places word on a list starting at index columnIndex
-    Args:   
+def placeWordOnRow(word, c, row):
+    """ Places word on a list starting at c
+    Args:
+        c (int): column index
         word (str): uppercase word
-        columnIndex (int): index where first letter of word is to be put
-        row (list): row where word will be put
+        row (list): row where word will be placed
     Returns: 
-        row (list): list where each item is a letter
-            ["", "", "C", "A", "T", "", ""]
+        row (list): updated row with word
+                    ["", "", "C", "A", "T", "", ""]
     """
     for letterIndex in range(len(word)):
-        row[letterIndex + columnIndex] = userWord[letterIndex]
+        row[letterIndex + c] = userWord[letterIndex]
     return row
 
 def placeWordOnBoard(r, c, d, word, board):
-    # place normally if H
+    """ Places a word on board
+    Args:
+        r (int): row index   
+        c (int): column index
+        d (str): direction
+        word (str): word all uppercase
+        board (list): scrabble board
+    Returns:
+        board (list): updated scrabble board
+    """
+    # place normally on row r if H
     if d == "H":
         board[r] = placeWordOnRow(word, c, board[r])
     # transpose board first if V
+    # then place on row c
     elif d == "V":
         board = list(map(list, list(zip(*board))))
         board[c] = placeWordOnRow(word, r, board[c])
@@ -308,34 +341,39 @@ def placeWordOnBoard(r, c, d, word, board):
     return board
 
 def getWordScore(word):
-    """Calculates the total score of a given word
+    """ Calculates the total score of a given word
     Args:   
-        word (str): word to be ccalculated
+        word (str): word to be calculated
     Returns:
         (int): total score of the word
     """
-    return reduce((lambda x, y: x + y), [getScore(letter) for letter in word])
+    try:
+        return reduce((lambda x, y: x + y), [getScore(letter) for letter in word])
+    except Exception:
+        return 0
 
-# scrabble code
+# make dictionary
 englishDict = makeDictionary("dictionary.txt")
 
+# initialise userWord
+userWord = ""
+while userWord != "***":
 
-
-# keeps asking for move while game isnt finished
-endGame = False
-while not endGame:
-    # ask for word
+    ## ask for word
     userWord = input("\nEnter a word: ")
+
+    # end turn if word is ***
+    if userWord == "***":
+        continue
 
     # makes word uppercase if valid
     # asks for another if invalid
     if not inDictionary(userWord, englishDict):
         print("Invalid word.")
         continue
-
     userWord = userWord.upper()
 
-    # ask for location
+    ## ask for location
     location = input("Enter a location: ")
 
     # formats location if valid
@@ -346,21 +384,18 @@ while not endGame:
 
     location = location.split(":")
     location = list(map(int, location[:2])) + [location[2]]
-
     r = location[0]
     c = location[1]
     d = location[2]
 
-    # copies necessary data for finding best move later
-    boardCopy = copy.deepcopy(Board)
-    myTilesCopy = copy.deepcopy(myTiles)
-    # first turn conditions
+    ## first turn conditions
     # checks if location is centered
     # asks for another location if word not centered
     if turnNo == 1:
         if not validFirstLocation(r, c, BOARD_SIZE):
-            half = BOARD_SIZE // 2
-            print("The location in the first move must be {}:{}:H or {}:{}:V.".format(half, half, half, half))
+            pos = BOARD_SIZE // 2 
+            # prints suggested first locations if invalid
+            print("The location in the first move must be {}:{}:H or {}:{}:V.".format(pos, pos, pos, pos))
             print("Invalid first move location.")
             continue
 
@@ -372,60 +407,41 @@ while not endGame:
 
         # checks if word can fit the board
         # asks for another if not
-        if len(userWord) > BOARD_SIZE // 2 + 1:
+        if not wordFitsBoard(r, c, d, BOARD_SIZE, userWord):
             print("Word outside board dimensions.")
             continue
 
-        # places word on board
-        Board = placeWordOnBoard(r, c, d, userWord, Board)
-        removeLetters()
-        wordScore = getWordScore(userWord)
+        # set points scoring tiles
+        scoringTiles = userWord
 
     # all other turns
     else:
         # checks if word can fit the board
         # asks for another if not
-        if not validLocation(r, c, d, BOARD_SIZE, userWord):
+        if not wordFitsBoard(r, c, d, BOARD_SIZE, userWord):
             print("Word outside board dimensions.")
             continue
 
         # checks if move is valid
-        valid, tiles = validMove(r, c, d, userWord, myTiles)
+        valid, scoringTiles = validMove(r, c, d, userWord, myTiles)
         if not valid:
             print("Invalid move.")
             continue
-        else:
-            wordScore = getWordScore(tiles)
 
-        # places word on board
-        Board = placeWordOnBoard(r, c, d, userWord, Board)
-
+    # place word on board
+    Board = placeWordOnBoard(r, c, d, userWord, Board)
+    # update tiles
+    myTiles = removeLetters(scoringTiles, myTiles)
+    # get turn scores
+    wordScore = getWordScore(scoringTiles)
     totalScore += wordScore
     print("Your score in this move:", wordScore)
     print("Your total score:", totalScore)
     printBoard(Board)
 
-    #updateTiles(r, c, d, userWord)
+    # updateTiles(r, c, d, userWord)
     getTiles(myTiles)
     printTiles(myTiles)
     turnNo += 1
 
-"""
-4. The move must not change or relocate any
-    existing tile on the board.
-make dictionary
-while game is not finished
-    ask for word (MAKE UPPERCASE)
-    check if valid word
-    ask for location
-    check if valid location
-    check if valid move
-    print score
-    find best possible move
-    print best possible word, score, location
-    update board
-    print board
-    update tiles
-    print tiles/scores
-"""
-
+print("Thanks for playing!")
