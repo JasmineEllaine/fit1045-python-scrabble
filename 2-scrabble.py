@@ -4,6 +4,7 @@ import math
 import sys
 import random
 import copy
+import itertools
 
 TILES_USED = 0  # records how many tiles have been returned to user
 CELL_WIDTH = 3  # cell width of the scrabble board
@@ -352,6 +353,48 @@ def getWordScore(word):
     except Exception:
         return 0
 
+
+def getNonEmptyRows(board):    
+    return [list(filter(str.strip, row)) for row in board]    
+
+def getNonEmptyColumns(board):
+    return getNonEmptyRows(transpose(board))
+
+def findBestWord(board):
+    rows = getNonEmptyRows(board)
+    cols = getNonEmptyColumns(board)
+
+    # ll = [sorted(x) for x in a]
+    # ls = set(tuple(x) for x in ll)
+
+    tmp_tiles = copy.deepcopy(myTiles)
+    for row in rows:
+        if row != []:
+            tmp_tiles += row
+            
+            for i in range(2, len(tmp_tiles)):              
+                a = list(itertools.permutations(tmp_tiles, i))    
+                ll = [sorted(x) for x in a]
+                ls = set(tuple(x) for x in ll)
+
+            print(ls)
+            tmp_tiles = copy.deepcopy(myTiles)
+
+    
+    for col in cols:
+        if col != []:
+            tmp_tiles += col
+
+            a = list(itertools.permutations(tmp_tiles, 2))
+            ll = [sorted(x) for x in a]
+            ls = set(tuple(x) for x in ll)
+
+            print(ls)
+            tmp_tiles = copy.deepcopy(myTiles)
+
+    return "i_work"   
+ 
+   
 ## make dictionary
 englishDict = makeDictionary("dictionary.txt")
 
@@ -428,6 +471,7 @@ while userWord != "***":
             print("Invalid move.")
             continue
 
+    findBestWord(Board)
     # place word on board
     Board = placeWordOnBoard(r, c, d, userWord, Board)
     # update tiles
@@ -444,4 +488,6 @@ while userWord != "***":
     printTiles(myTiles)
     turnNo += 1
 
+
 print("Thanks for playing!")
+
