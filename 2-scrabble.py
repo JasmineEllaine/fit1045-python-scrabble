@@ -126,11 +126,11 @@ printTiles(myTiles)
 # Write your code below this
 ########################################################################
 
-# game data
+## game data
 turnNo = 1
 totalScore = 0
 
-# functions here
+## functions here
 def makeDictionary(dictionaryName):
     """ Creates a list out of a filename with each line being an item in 
        the list.
@@ -352,10 +352,10 @@ def getWordScore(word):
     except Exception:
         return 0
 
-# make dictionary
+## make dictionary
 englishDict = makeDictionary("dictionary.txt")
 
-# initialise userWord
+## initialise userWord
 userWord = ""
 while userWord != "***":
 
@@ -414,7 +414,7 @@ while userWord != "***":
         # set points scoring tiles
         scoringTiles = userWord
 
-    # all other turns
+    ## all other turns
     else:
         # checks if word can fit the board
         # asks for another if not
