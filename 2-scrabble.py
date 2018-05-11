@@ -115,7 +115,7 @@ if SHUFFLE:
 #             print("Your number is not within the range.\n")
 #     else:
 #         print("Are you a little tipsy? I asked you to enter a number.\n")
-BOARD_SIZE = 9
+BOARD_SIZE = 7
 Board = initializeBoard(BOARD_SIZE)
 printBoard(Board)
 myTiles = []
@@ -393,9 +393,9 @@ def bestMove(dictionary, board, boardsize, tilesList):
         currentBestScore = 0
 
         # horizontal placements
-        d = "H"
         # gets every word in dictionary
         for dictWord in dictionary:
+            d = "H"
             for r, row in enumerate(board):
                 for c in range(len(row)):
                     # checks if word satisfies rules
@@ -409,8 +409,7 @@ def bestMove(dictionary, board, boardsize, tilesList):
                                 currentBestWord = dictWord
 
         # vertical placements
-        d = "V"
-        for dictWord in dictionary:
+            d = "V"
             for r, row in enumerate(board):
                 for c in range(len(row)):
                     if wordFitsBoard(r, c, d, boardsize, dictWord):
@@ -508,9 +507,9 @@ while userWord != "***":
     else:
         bestWord, bestScore, bestLocation = bestMove(englishDict, Board, BOARD_SIZE, myTiles)
 
-    # if no move can be made
+    # if no move can be made   
     if bestWord == None:
-        print("No move can be made.")
+        print("No move can be made.")    
     else:
         if turnNo == 1:
             print("Maximum possible score in this move was {} with word {} at {}:{}:H or {}:{}:V".format(getWordScore(bestWord), bestWord, pos, pos, pos, pos))
