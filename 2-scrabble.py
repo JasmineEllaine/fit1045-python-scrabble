@@ -4,7 +4,6 @@ import math
 import sys
 import random
 import copy
-import itertools
 
 TILES_USED = 0  # records how many tiles have been returned to user
 CELL_WIDTH = 3  # cell width of the scrabble board
@@ -130,6 +129,7 @@ printTiles(myTiles)
 ## game data
 turnNo = 1
 totalScore = 0
+pos = BOARD_SIZE // 2 
 
 ## functions here
 def makeDictionary(dictionaryName):
@@ -353,48 +353,65 @@ def getWordScore(word):
     except Exception:
         return 0
 
+def bestFirstWord(dictionary, tilesList, boardsize):
+    """ Finds best word for first turn
+    Args:
+        dictionary (list): list of words in dictionary
+        tilesList (list): letters in tile rack
+        boardsize (int): size of board
+    Returns:
+        (str): best word if word can be made
+        None: if no word can be made
+    """
+    # makes list of words from dictionary that an be made using tilesList
+    # and is less than half of boardsize
+    validWords = [dictWord for dictWord in dictionary if len(dictWord) <= boardsize // 2 + 1 and correctTiles(dictWord, tilesList)]
+    validScores = [getScore(word) for word in validWords]
 
-def getNonEmptyRows(board):    
-    return [list(filter(str.strip, row)) for row in board]    
+    # tries to get index of highest score, then returns corresponding word
+    try:
+        return validWords[validScores.index(max(validScores))]
+    except Exception:
+        return None
 
-def getNonEmptyColumns(board):
-    return getNonEmptyRows(transpose(board))
+def bestMove(dictionary, board, boardsize, tilesList):
+    try:
+        # initialise current best score
+        currentBestScore = 0
 
-def findBestWord(board):
-    rows = getNonEmptyRows(board)
-    cols = getNonEmptyColumns(board)
+        # horizontal placements
+        d = "H"
+        # gets every word in dictionary
+        for dictWord in dictionary:
+            for r, row in enumerate(board):
+                for c in range(len(row)):
+                    # checks if word satisfies rules
+                    if wordFitsBoard(r, c, d, boardsize, dictWord):
+                        valid, scoringTiles = validMove(r, c, d, dictWord, tilesList)
+                        # if all rules satisfied
+                        if valid:
+                            dictWordScore = getWordScore(scoringTiles) 
+                            if dictWordScore >= currentBestScore:
+                                currentBestlocation = "{}:{}:{}".format(r, c, d)
+                                currentBestWord = dictWord
 
-    # ll = [sorted(x) for x in a]
-    # ls = set(tuple(x) for x in ll)
+        # vertical placements
+        d = "V"
+        for dictWord in dictionary:
+            for r, row in enumerate(board):
+                for c in range(len(row)):
+                    if wordFitsBoard(r, c, d, boardsize, dictWord):
+                        valid, scoringTiles = validMove(r, c, d, dictWord, tilesList)
+                        if valid:
+                            dictWordScore = getWordScore(scoringTiles) 
+                            if dictWordScore >= currentBestScore:
+                                currentBestlocation = "{}:{}:{}".format(r, c, d)
+                                currentBestWord = dictWord
 
-    tmp_tiles = copy.deepcopy(myTiles)
-    for row in rows:
-        if row != []:
-            tmp_tiles += row
-            
-            for i in range(2, len(tmp_tiles)):              
-                a = list(itertools.permutations(tmp_tiles, i))    
-                ll = [sorted(x) for x in a]
-                ls = set(tuple(x) for x in ll)
+        return currentBestWord, currentBestScore, currentBestlocation
+    except Exception:
+        return None, None, None
 
-            print(ls)
-            tmp_tiles = copy.deepcopy(myTiles)
-
-    
-    for col in cols:
-        if col != []:
-            tmp_tiles += col
-
-            a = list(itertools.permutations(tmp_tiles, 2))
-            ll = [sorted(x) for x in a]
-            ls = set(tuple(x) for x in ll)
-
-            print(ls)
-            tmp_tiles = copy.deepcopy(myTiles)
-
-    return "i_work"   
- 
-   
 ## make dictionary
 englishDict = makeDictionary("dictionary.txt")
 
@@ -436,7 +453,6 @@ while userWord != "***":
     # asks for another location if word not centered
     if turnNo == 1:
         if not validFirstLocation(r, c, BOARD_SIZE):
-            pos = BOARD_SIZE // 2 
             # prints suggested first locations if invalid
             print("The location in the first move must be {}:{}:H or {}:{}:V.".format(pos, pos, pos, pos))
             print("Invalid first move location.")
@@ -471,7 +487,25 @@ while userWord != "***":
             print("Invalid move.")
             continue
 
-    findBestWord(Board)
+    ## gets best move
+    # first turn
+    if turnNo == 1:
+        bestWord = bestFirstWord(englishDict, myTiles, BOARD_SIZE)
+    # all other turns
+    else:
+        bestWord, bestScore, bestLocation = bestMove(englishDict, Board, BOARD_SIZE, myTiles)
+
+    # if no move can be made
+    if bestWord == None:
+        print("No move can be made.")
+    else:
+        if bestWord == userWord:
+            print("Your move was the best move, well done!")
+        if turnNo == 1:
+            print("Maximum possible score in this move was {} with word {} at {}:{}:H or {}:{}:V".format(getWordScore(bestWord), bestWord, pos, pos, pos, pos))
+        else:
+            print("Maximum possible score in this move was {} with word {} at {}".format(bestScore, bestWord, bestLocation))
+    
     # place word on board
     Board = placeWordOnBoard(r, c, d, userWord, Board)
     # update tiles
@@ -483,11 +517,8 @@ while userWord != "***":
     print("Your total score:", totalScore)
     printBoard(Board)
 
-    # updateTiles(r, c, d, userWord)
     getTiles(myTiles)
     printTiles(myTiles)
     turnNo += 1
 
-
 print("Thanks for playing!")
-
