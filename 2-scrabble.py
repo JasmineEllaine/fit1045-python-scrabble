@@ -507,6 +507,7 @@ while userWord != "***":
     # first turn
     if turnNo == 1:
         bestWord = bestFirstWord(englishDict, myTiles, BOARD_SIZE)
+        bestScore = getWordScore(bestWord)
     # all other turns
     else:
         bestWord, bestScore, bestLocation = bestMove(englishDict, Board, BOARD_SIZE, myTiles)
@@ -516,7 +517,7 @@ while userWord != "***":
         print("No move can be made.")    
     else:
         # congratulations message
-        if getWordScore(userWord) == bestScore:
+        if getWordScore(scoringTiles) == bestScore:
             print("Your move was the best move, well done!")
         if turnNo == 1:
             print("Maximum possible score in this move was {} with word {} at {}:{}:H or {}:{}:V".format(getWordScore(bestWord), bestWord, pos, pos, pos, pos))
