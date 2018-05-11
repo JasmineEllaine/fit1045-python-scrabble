@@ -115,7 +115,7 @@ if SHUFFLE:
 #             print("Your number is not within the range.\n")
 #     else:
 #         print("Are you a little tipsy? I asked you to enter a number.\n")
-BOARD_SIZE = 7
+BOARD_SIZE = 9
 Board = initializeBoard(BOARD_SIZE)
 printBoard(Board)
 myTiles = []
@@ -305,16 +305,29 @@ def validMove(r, c, d, word, tiles):
             if v != word[i]:
                 return False, None
 
-    # makes list of word letters not in board
-    scoringTiles = [letter for letter in word if letter not in boardSlice]
+    # makes list of word letters not in board    
+    scoringTiles = []
+    for letter in word:
+        if letter not in boardSlice:
+            scoringTiles += letter            
+        else:
+            boardSlice.remove(letter)
+   
     # checks if uses at least one tile from board
     if len(scoringTiles) == len(word):
         return False, None
 
     # checks if myTiles can be used to make remaining letters
-    remTiles = [tile for tile in scoringTiles if tile not in myTiles]
+    #remTiles = [tile for tile in scoringTiles if tile not in myTiles]
+    # remTiles = []
+    # for tile in scoringTiles:
+    #     if tile not in myTiles:
+    #         remTiles += tile
+    #     else:
+    #         scoringTiles.remove(tile)
 
-    if remTiles == []:
+    validRemTiles = correctTiles(scoringTiles, myTiles)
+    if validRemTiles:
         return True, scoringTiles
     return False, None
 
@@ -406,6 +419,7 @@ def bestMove(dictionary, board, boardsize, tilesList):
                             if dictWordScore >= currentBestScore:
                                 currentBestlocation = "{}:{}:{}".format(r, c, d)
                                 currentBestWord = dictWord
+                                currentBestScore = dictWordScore
                     # vertical placements
                     d = "V"
                     if wordFitsBoard(r, c, d, boardsize, dictWord):
@@ -415,6 +429,7 @@ def bestMove(dictionary, board, boardsize, tilesList):
                             if dictWordScore >= currentBestScore:
                                 currentBestlocation = "{}:{}:{}".format(r, c, d)
                                 currentBestWord = dictWord
+                                currentBestScore = dictWordScore
 
         return currentBestWord, currentBestScore, currentBestlocation
     except Exception:
