@@ -115,7 +115,7 @@ if SHUFFLE:
 #             print("Your number is not within the range.\n")
 #     else:
 #         print("Are you a little tipsy? I asked you to enter a number.\n")
-BOARD_SIZE = 9
+BOARD_SIZE = 12
 Board = initializeBoard(BOARD_SIZE)
 printBoard(Board)
 myTiles = []
@@ -416,7 +416,7 @@ def bestMove(dictionary, board, boardsize, tilesList):
                         # if all rules satisfied
                         if valid:
                             dictWordScore = getWordScore(scoringTiles) 
-                            if dictWordScore >= currentBestScore:
+                            if dictWordScore > currentBestScore:
                                 currentBestlocation = "{}:{}:{}".format(r, c, d)
                                 currentBestWord = dictWord
                                 currentBestScore = dictWordScore
@@ -426,7 +426,7 @@ def bestMove(dictionary, board, boardsize, tilesList):
                         valid, scoringTiles = validMove(r, c, d, dictWord, tilesList)
                         if valid:
                             dictWordScore = getWordScore(scoringTiles) 
-                            if dictWordScore >= currentBestScore:
+                            if dictWordScore > currentBestScore:
                                 currentBestlocation = "{}:{}:{}".format(r, c, d)
                                 currentBestWord = dictWord
                                 currentBestScore = dictWordScore
