@@ -239,15 +239,28 @@ def removeLetters(word, tilesList):
     return newTilesList
 
 def correctTiles(word, tiles):
-    """ Checks if word can be made given a set of tiles
+    """Checks if a word can be made using the given tiles
     Args:   
-        word (str): word all uppercase
+        word (str): word in uppercase
         tiles (list): list containing tiles in uppercase
     Returns:
         True (bool): if word can be made using the given tiles
         False (bool): otherwise
     """
-    return set(word).issubset(set(myTiles))
+    tilesCopy = copy.deepcopy(tiles)
+    validLetters = 0
+    for letter in word:
+        for tile in tilesCopy:
+            # adds one to the tally of valid letters if tile is a letter in word
+            # removes tile from tile list
+            # breaks out of 2nd loop to compare next letter in word
+            if tile == letter:
+                validLetters += 1
+                tilesCopy.remove(tile)
+                break
+    if validLetters == len(word):
+        return True
+    return False
 
 def transpose(board):
     """ Transposes a matrix
@@ -366,7 +379,7 @@ def bestFirstWord(dictionary, tilesList, boardsize):
     # makes list of words from dictionary that an be made using tilesList
     # and is less than half of boardsize
     validWords = [dictWord for dictWord in dictionary if len(dictWord) <= boardsize // 2 + 1 and correctTiles(dictWord, tilesList)]
-    validScores = [getScore(word) for word in validWords]
+    validScores = [getWordScore(word) for word in validWords]
 
     # tries to get index of highest score, then returns corresponding word
     try:
@@ -499,8 +512,6 @@ while userWord != "***":
     if bestWord == None:
         print("No move can be made.")
     else:
-        if bestWord == userWord:
-            print("Your move was the best move, well done!")
         if turnNo == 1:
             print("Maximum possible score in this move was {} with word {} at {}:{}:H or {}:{}:V".format(getWordScore(bestWord), bestWord, pos, pos, pos, pos))
         else:
