@@ -94,8 +94,7 @@ for line in tilesFile:
     Tiles.append(line)
 tilesFile.close()
 # decide whether to return random tiles
-# rand = input("Do you want to use random tiles (enter Y or N): ")
-rand = "N"
+rand = input("Do you want to use random tiles (enter Y or N): ")
 if rand == "Y":
     SHUFFLE = True
 else:
@@ -104,18 +103,18 @@ else:
         SHUFFLE = True
 if SHUFFLE:
     random.shuffle(Tiles)
-# validBoardSize = False
-# while not validBoardSize:
-#     BOARD_SIZE = input("Enter board size (a number between 5 to 15): ")
-#     if BOARD_SIZE.isdigit():
-#         BOARD_SIZE = int(BOARD_SIZE)
-#         if BOARD_SIZE >= 5 and BOARD_SIZE <= 15:
-#             validBoardSize = True
-#         else:
-#             print("Your number is not within the range.\n")
-#     else:
-#         print("Are you a little tipsy? I asked you to enter a number.\n")
-BOARD_SIZE = 12
+validBoardSize = False
+while not validBoardSize:
+    BOARD_SIZE = input("Enter board size (a number between 5 to 15): ")
+    if BOARD_SIZE.isdigit():
+        BOARD_SIZE = int(BOARD_SIZE)
+        if BOARD_SIZE >= 5 and BOARD_SIZE <= 15:
+            validBoardSize = True
+        else:
+            print("Your number is not within the range.\n")
+    else:
+        print("Are you a little tipsy? I asked you to enter a number.\n")
+
 Board = initializeBoard(BOARD_SIZE)
 printBoard(Board)
 myTiles = []
@@ -126,12 +125,15 @@ printTiles(myTiles)
 # Write your code below this
 ########################################################################
 
-## game data
+## GAME DATA
 turnNo = 1
 totalScore = 0
 pos = BOARD_SIZE // 2 
 
-## functions here
+####################################
+### FUNCTIONS HERE
+####################################
+
 def makeDictionary(dictionaryName):
     """ Creates a list out of a filename with each line being an item in 
        the list.
@@ -139,7 +141,7 @@ def makeDictionary(dictionaryName):
         dictionaryName (str): name of the file to be turned into a list
                               must contain file extension
     Returns:
-        (list): list containing all each line of a file
+        (list): list containing each line of a file
     """
     dictionaryFile = open(dictionaryName)
     return [dictionaryWord.strip() for dictionaryWord in dictionaryFile]
@@ -177,8 +179,7 @@ def validLocationFormat(location):
 
             # checks if r and c are integers
             try:
-                rc = [number for number in location[:2] if int(
-                    number) >= 0 and int(number) < BOARD_SIZE]
+                rc = [number for number in location[:2] if int(number) >= 0 and int(number) < BOARD_SIZE]
             except Exception:
                 return False
             else:
@@ -239,7 +240,7 @@ def removeLetters(word, tilesList):
     return newTilesList
 
 def correctTiles(word, tiles):
-    """Checks if a word can be made using the given tiles
+    """ Checks if a word can be made using the given tiles
     Args:   
         word (str): word in uppercase
         tiles (list): list containing tiles in uppercase
@@ -290,8 +291,7 @@ def validMove(r, c, d, word, tiles):
         None: if move is invalid/no points scoring tiles
         scoringTiles (list): points scoring tiles
     """
-    # creates a list out of the section of the board where word
-    # is to be placed
+    # creates a list out of the section of the board where word is to be placed
     if d == 'H':
         boardSlice = Board[r][c:c + len(word)]
     elif d == 'V':
@@ -317,15 +317,7 @@ def validMove(r, c, d, word, tiles):
     if len(scoringTiles) == len(word):
         return False, None
 
-    # checks if myTiles can be used to make remaining letters
-    #remTiles = [tile for tile in scoringTiles if tile not in myTiles]
-    # remTiles = []
-    # for tile in scoringTiles:
-    #     if tile not in myTiles:
-    #         remTiles += tile
-    #     else:
-    #         scoringTiles.remove(tile)
-
+    # checks if myTiles can be used to make rest of word
     validRemTiles = correctTiles(scoringTiles, myTiles)
     if validRemTiles:
         return True, scoringTiles
@@ -362,9 +354,9 @@ def placeWordOnBoard(r, c, d, word, board):
     # transpose board first if V
     # then place on row c
     elif d == "V":
-        board = list(map(list, list(zip(*board))))
+        board = transpose(board)
         board[c] = placeWordOnRow(word, r, board[c])
-        board = list(map(list, list(zip(*board))))
+        board = transpose(board)
     return board
 
 def getWordScore(word):
@@ -389,8 +381,7 @@ def bestFirstWord(dictionary, tilesList, boardsize):
         (str): best word if word can be made
         None: if no word can be made
     """
-    # makes list of words from dictionary that an be made using tilesList
-    # and is less than half of boardsize
+    # makes list of words from dictionary that an be made using tilesList and is less than half of boardsize
     validWords = [dictWord for dictWord in dictionary if len(dictWord) <= boardsize // 2 + 1 and correctTiles(dictWord, tilesList)]
     validScores = [getWordScore(word) for word in validWords]
 
@@ -435,6 +426,10 @@ def bestMove(dictionary, board, boardsize, tilesList):
     except Exception:
         return None, None, None
 
+####################################
+# SCRABBLE GAME START
+####################################
+
 ## make dictionary
 englishDict = makeDictionary("dictionary.txt")
 
@@ -467,9 +462,7 @@ while userWord != "***":
 
     location = location.split(":")
     location = list(map(int, location[:2])) + [location[2]]
-    r = location[0]
-    c = location[1]
-    d = location[2]
+    r, c, d = location
 
     ## first turn conditions
     # checks if location is centered
@@ -522,6 +515,9 @@ while userWord != "***":
     if bestWord == None:
         print("No move can be made.")    
     else:
+        # congratulations message
+        if getWordScore(userWord) == bestScore:
+            print("Your move was the best move, well done!")
         if turnNo == 1:
             print("Maximum possible score in this move was {} with word {} at {}:{}:H or {}:{}:V".format(getWordScore(bestWord), bestWord, pos, pos, pos, pos))
         else:
