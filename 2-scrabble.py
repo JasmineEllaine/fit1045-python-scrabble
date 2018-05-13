@@ -392,26 +392,44 @@ def bestFirstWord(dictionary, tilesList, boardsize):
         return None
 
 def bestMove(dictionary, board, boardsize, tilesList):
+    """ Finds best move for all turns except the first
+    Args:
+        dictionary (list): list of words in dictionary
+        board (list): scrabble board
+        boardsize (int): size of board
+        tilesList (list): letters in tile rack
+    Returns:
+        1
+        currentBestWord (str): word with the highest score
+        currentBestScore (int): highest score possible
+        currentBestLocation (str): location of best move in r:c:d format
+        2
+        None: if no move can be made
+        None: if no move can be made
+        None: if no move can be made
+    """
     try:
         # initialise current best score
         currentBestScore = 0
         # horizontal placements
         # gets every word in dictionary
         for dictWord in dictionary:
+            # goes through every space in board
             for r, row in enumerate(board):
                 for c in range(len(row)):
                     # checks if word satisfies rules
+                    # horizontal placement of word
                     d = "H"
                     if wordFitsBoard(r, c, d, boardsize, dictWord):
                         valid, scoringTiles = validMove(r, c, d, dictWord, tilesList)
-                        # if all rules satisfied
+                        # update best move data if all rules satisfied
                         if valid:
                             dictWordScore = getWordScore(scoringTiles) 
                             if dictWordScore > currentBestScore:
                                 currentBestlocation = "{}:{}:{}".format(r, c, d)
                                 currentBestWord = dictWord
                                 currentBestScore = dictWordScore
-                    # vertical placements
+                    # vertical placement of word
                     d = "V"
                     if wordFitsBoard(r, c, d, boardsize, dictWord):
                         valid, scoringTiles = validMove(r, c, d, dictWord, tilesList)
@@ -421,7 +439,6 @@ def bestMove(dictionary, board, boardsize, tilesList):
                                 currentBestlocation = "{}:{}:{}".format(r, c, d)
                                 currentBestWord = dictWord
                                 currentBestScore = dictWordScore
-
         return currentBestWord, currentBestScore, currentBestlocation
     except Exception:
         return None, None, None
@@ -504,6 +521,7 @@ while userWord != "***":
             continue
 
     ## gets best move
+    print("\nCalculating...", end="\r")
     # first turn
     if turnNo == 1:
         bestWord = bestFirstWord(englishDict, myTiles, BOARD_SIZE)
@@ -511,24 +529,22 @@ while userWord != "***":
     # all other turns
     else:
         bestWord, bestScore, bestLocation = bestMove(englishDict, Board, BOARD_SIZE, myTiles)
-
+        
     # if no move can be made   
     if bestWord == None:
         print("No move can be made.")    
     else:
         # congratulations message
         if getWordScore(scoringTiles) == bestScore:
-            print("Your move was the best move, well done!")
+            print("Your move was the best move. Well done!")
         if turnNo == 1:
             print("Maximum possible score in this move was {} with word {} at {}:{}:H or {}:{}:V".format(getWordScore(bestWord), bestWord, pos, pos, pos, pos))
         else:
             print("Maximum possible score in this move was {} with word {} at {}".format(bestScore, bestWord, bestLocation))
     
-    # place word on board
+    ## updating game data
     Board = placeWordOnBoard(r, c, d, userWord, Board)
-    # update tiles
     myTiles = removeLetters(scoringTiles, myTiles)
-    # get turn scores
     wordScore = getWordScore(scoringTiles)
     totalScore += wordScore
     print("Your score in this move:", wordScore)
