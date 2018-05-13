@@ -411,36 +411,34 @@ def bestMove(dictionary, board, boardsize, tilesList):
     try:
         # initialise current best score
         currentBestScore = 0
-        empty = [""]*boardsize
         # horizontal placements
         # gets every word in dictionary
         for dictWord in dictionary:
             # goes through every space in board
             for r, row in enumerate(board):
-                if row != empty:
-                    for c in range(len(row)):
-                        # checks if word satisfies rules
-                        # horizontal placement of word
-                        d = "H"
-                        if wordFitsBoard(r, c, d, boardsize, dictWord):
-                            valid, scoringTiles = validMove(r, c, d, dictWord, tilesList)
-                            # update best move data if all rules satisfied
-                            if valid:
-                                dictWordScore = getWordScore(scoringTiles) 
-                                if dictWordScore > currentBestScore:
-                                    currentBestlocation = "{}:{}:{}".format(r, c, d)
-                                    currentBestWord = dictWord
-                                    currentBestScore = dictWordScore
-                        # vertical placement of word
-                        d = "V"
-                        if wordFitsBoard(r, c, d, boardsize, dictWord):
-                            valid, scoringTiles = validMove(r, c, d, dictWord, tilesList)
-                            if valid:
-                                dictWordScore = getWordScore(scoringTiles) 
-                                if dictWordScore > currentBestScore:
-                                    currentBestlocation = "{}:{}:{}".format(r, c, d)
-                                    currentBestWord = dictWord
-                                    currentBestScore = dictWordScore
+                for c in range(len(row)):
+                    # checks if word satisfies rules
+                    # horizontal placement of word
+                    d = "H"
+                    if wordFitsBoard(r, c, d, boardsize, dictWord):
+                        valid, scoringTiles = validMove(r, c, d, dictWord, tilesList)
+                        # update best move data if all rules satisfied
+                        if valid:
+                            dictWordScore = getWordScore(scoringTiles) 
+                            if dictWordScore > currentBestScore:
+                                currentBestlocation = "{}:{}:{}".format(r, c, d)
+                                currentBestWord = dictWord
+                                currentBestScore = dictWordScore
+                    # vertical placement of word
+                    d = "V"
+                    if wordFitsBoard(r, c, d, boardsize, dictWord):
+                        valid, scoringTiles = validMove(r, c, d, dictWord, tilesList)
+                        if valid:
+                            dictWordScore = getWordScore(scoringTiles) 
+                            if dictWordScore > currentBestScore:
+                                currentBestlocation = "{}:{}:{}".format(r, c, d)
+                                currentBestWord = dictWord
+                                currentBestScore = dictWordScore
         return currentBestWord, currentBestScore, currentBestlocation
     except Exception:
         return None, None, None
